@@ -84,7 +84,7 @@ def list_birthdays():
 def send_joke():
     lines = open("jokes.txt", encoding="utf8").read().splitlines()
     myline = random.choice(lines)
-    myline = myline.replace("|", "\n")
+    myline = myline.replace("|", "\n",1)
     return myline
 
 
