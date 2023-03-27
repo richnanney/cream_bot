@@ -96,8 +96,8 @@ def handle_response(message: str) -> str:
     if p_message == "!help":
         return "`Beep boop I am a robo :)`"
 
-    if "!cum" in p_message:
-        return "😩💦"
+    if "richard" in p_message:
+        return "Richard? I know that guy!"
 
     if p_message == "!checkbirthday":
         return wish_birthday()
