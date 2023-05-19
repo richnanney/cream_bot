@@ -43,9 +43,10 @@ def run_discord_bot():
             wait_time = (next_time - now).total_seconds()
             await asyncio.sleep(wait_time)
             channel = client.get_channel(DEFAULT_CHANNEL_ID)
-
+            
             if last_checked != now.day:
-                await send_message(responses.wish_birthday(), channel)
+                for server in client.guilds:
+                    await send_message(responses.wish_birthday(server.name), channel)
                 last_checked = now.day
 
     @client.event

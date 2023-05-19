@@ -6,6 +6,7 @@ import os
 from person import *
 
 today = date.today()
+
 if os.path.exists("cream_birthdays.json"):
     with open("cream_birthdays.json", "r") as f:
         people = json.loads(f.read(), object_hook=lambda d: Person(**d))
@@ -13,60 +14,63 @@ else:
     people = {}
 
 
-def next_birthday():
-    for person in people:
-        if today.month <= int(person.month) and today.day < int(person.day):
-            next_birthday_age = str(today.year - int(person.year))
-            next_birthday_month = str(calendar.month_name[int(person.month)])
+def next_birthday(server):
+    file_name = f"{server}_birthdays.json"
+
+    today = date.today()
+
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as file:
+            json.dump([], file)
+    with open(file_name, 'r') as file:
+        data = json.load(file)
+
+    for person in data:
+        if today.month < person["month"] or (today.month == person["month"] and today.day < person["day"]):
+            next_birthday_age = str(today.year - int(person["year"]))
+            next_birthday_month = str(calendar.month_name[int(person["month"])])
 
             ordinal = "th"
             if (
-                str(person.day) == "11"
-                or str(person.day) == "12"
-                or str(person.day) == "13"
+                str(person["day"]) == "11"
+                or str(person["day"]) == "12"
+                or str(person["day"]) == "13"
             ):
                 ordinal = "th"
-            elif str(person.day)[-1] == "1":
+            elif str(person["day"])[-1] == "1":
                 ordinal = "st"
-            elif str(person.day)[-1] == "2":
+            elif str(person["day"])[-1] == "2":
                 ordinal = "nd"
-            elif str(person.day)[-1] == "3":
+            elif str(person["day"])[-1] == "3":
                 ordinal = "rd"
 
-            message = (
-                "The next birthday is "
-                + person.name
-                + "'s, which will be on "
-                + next_birthday_month
-                + " "
-                + person.day
-                + ordinal
-                + ". "
-                + person.pronoun
-                + " will be turning "
-                + next_birthday_age
-                + "."
-            )
+            message = f"The next birthday is {person['name']}'s, which will be on {next_birthday_month} {person['day']}{ordinal}. {person['pronoun'].capitalize()} will be turning {next_birthday_age}."
             return message
     else:
         return "No more birthdays this year! Check again next year."
 
 
-def wish_birthday():
-    print("This is signifying a check for a birthday today.")
-    for person in people:
-        if today.month == person.month and today.day == person.day:
-            birthday_boy = person.name
-            message = (
-                "Wow @everyone! Today is our very own's "
-                + birthday_boy
-                + " birthday. Please wish them a happy birthday!"
-            )
+def wish_birthday(server):
+    file_name = f"{server}_birthdays.json"
+
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as file:
+            json.dump([], file)
+    with open(file_name, 'r') as file:
+        data = json.load(file)
+    print(f"This is signifying a check for a birthday today in the {server} server.")
+    for person in data:
+        if today.month == person["month"] and today.day == person["day"]:
+            message = f"Wow @everyone! Please wish our very own {person['name']} a very happy birthday! They turn {today.year - person['year']} today!"
             return message
     return False
 
 def list_birthdays(server):
     file_name = f"{server}_birthdays.json"
+
+    if not os.path.exists(file_name):
+        with open(file_name, 'w') as file:
+            json.dump([], file)
 
     with open(file_name, 'r') as file:
         data = json.load(file)
@@ -93,13 +97,16 @@ def send_joke():
 def add_birthday(message, server):
     birthday_list = message.split(",")
 
-    new_person = Person(
-        birthday_list[1],  # Name
-        int(birthday_list[2]),  # Year
-        int(birthday_list[3]),  # Month
-        int(birthday_list[4]),  # Day
-        birthday_list[5],  # Pronoun
-    )
+    try:
+        new_person = Person(
+            birthday_list[1].strip(),  # Name
+            int(birthday_list[2]),  # Year
+            int(birthday_list[3]),  # Month
+            int(birthday_list[4]),  # Day
+            birthday_list[5].strip(),  # Pronoun
+        )
+    except Exception as e:
+        return "Looks like you formatted the command wrong. Try !help to see an example."
 
     file_name = f"{server}_birthdays.json"
 
@@ -120,7 +127,7 @@ def add_birthday(message, server):
     
     sort_birthdays_by_date(server)
 
-    return f"Okay, new birthday added. {new_person.name.capitalize()}'s birthday is on {new_person.month}/{new_person.day}/{new_person.year}, and {new_person.pronoun} would turn {today.year - new_person.year} this year."
+    return f"Okay, new birthday added. {new_person.name.strip().capitalize()}'s birthday is on {new_person.month}/{new_person.day}/{new_person.year}, and {new_person.pronoun} would turn {today.year - new_person.year} this year."
 
 
 def is_duplicate_birthday(existing_birthdays, new_birthday):
@@ -149,7 +156,7 @@ def sort_birthdays_by_date(server):
 def handle_response(message):
     p_message = message.content.lower()
     if p_message == "!nextbirthday":
-        return next_birthday()
+        return next_birthday(message.guild.name)
 
     if p_message == "!help":
         help_message = """Welcome to CremeBot! The currently available commands are:
@@ -162,7 +169,7 @@ def handle_response(message):
         return help_message
     
     if p_message == "!checkbirthday":
-        return wish_birthday()
+        return wish_birthday(message.guild.name)
 
     if p_message == "!listbirthdays":
         return list_birthdays(message.guild.name)
