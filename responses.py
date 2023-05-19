@@ -20,13 +20,15 @@ def next_birthday(server):
     today = date.today()
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as file:
+        with open(file_name, "w") as file:
             json.dump([], file)
-    with open(file_name, 'r') as file:
+    with open(file_name, "r") as file:
         data = json.load(file)
 
     for person in data:
-        if today.month < person["month"] or (today.month == person["month"] and today.day < person["day"]):
+        if today.month < person["month"] or (
+            today.month == person["month"] and today.day < person["day"]
+        ):
             next_birthday_age = str(today.year - int(person["year"]))
             next_birthday_month = str(calendar.month_name[int(person["month"])])
 
@@ -54,9 +56,9 @@ def wish_birthday(server):
     file_name = f"{server}_birthdays.json"
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as file:
+        with open(file_name, "w") as file:
             json.dump([], file)
-    with open(file_name, 'r') as file:
+    with open(file_name, "r") as file:
         data = json.load(file)
     print(f"This is signifying a check for a birthday today in the {server} server.")
     for person in data:
@@ -65,14 +67,15 @@ def wish_birthday(server):
             return message
     return False
 
+
 def list_birthdays(server):
     file_name = f"{server}_birthdays.json"
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as file:
+        with open(file_name, "w") as file:
             json.dump([], file)
 
-    with open(file_name, 'r') as file:
+    with open(file_name, "r") as file:
         data = json.load(file)
 
         if not data:
@@ -106,25 +109,27 @@ def add_birthday(message, server):
             birthday_list[5].strip(),  # Pronoun
         )
     except Exception as e:
-        return "Looks like you formatted the command wrong. Try !help to see an example."
+        return (
+            "Looks like you formatted the command wrong. Try !help to see an example."
+        )
 
     file_name = f"{server}_birthdays.json"
 
     if not os.path.exists(file_name):
-        with open(file_name, 'w') as file:
+        with open(file_name, "w") as file:
             json.dump([], file)
 
-    with open(file_name, 'r+') as file:
+    with open(file_name, "r+") as file:
         data = json.load(file)
 
         if is_duplicate_birthday(data, new_person.__dict__):
             return "This birthday already exists in the system."
-        
+
         data.append(new_person.__dict__)
         file.seek(0)
         json.dump(data, file, indent=4)
         file.truncate()
-    
+
     sort_birthdays_by_date(server)
 
     return f"Okay, new birthday added. {new_person.name.strip().capitalize()}'s birthday is on {new_person.month}/{new_person.day}/{new_person.year}, and {new_person.pronoun} would turn {today.year - new_person.year} this year."
@@ -141,10 +146,11 @@ def is_duplicate_birthday(existing_birthdays, new_birthday):
             return True
     return False
 
+
 def sort_birthdays_by_date(server):
     file_name = f"{server}_birthdays.json"
 
-    with open(file_name, 'r+') as file:
+    with open(file_name, "r+") as file:
         data = json.load(file)
 
         sorted_data = sorted(data, key=lambda bday: (bday["month"], bday["day"]))
@@ -152,6 +158,7 @@ def sort_birthdays_by_date(server):
         file.seek(0)
         json.dump(sorted_data, file, indent=4)
         file.truncate()
+
 
 def handle_response(message):
     p_message = message.content.lower()
@@ -167,7 +174,7 @@ def handle_response(message):
             **!addbirthday** : Adds a birthday to the saved list of birthdays. An example of the formatting would be '!addbirthday,Adolf,1889,4,20,He'
             **!joke** : Tells a joke. I stole these from the /r/3amjokes and /r/dadjokes subreddits, so they're mostly quick and clean. If you want me to add one, I'd be more than happy to."""
         return help_message
-    
+
     if p_message == "!checkbirthday":
         return wish_birthday(message.guild.name)
 

@@ -8,7 +8,7 @@ DEFAULT_CHANNEL_ID = 1070809323296526419
 
 async def send_message(content, channel):
     try:
-        if content: #This will prevent us from sending 'False'.
+        if content:  # This will prevent us from sending 'False'.
             await channel.send(content)
     except Exception as e:
         print(f"Error sending response! Error: {e}")
@@ -43,7 +43,7 @@ def run_discord_bot():
             wait_time = (next_time - now).total_seconds()
             await asyncio.sleep(wait_time)
             channel = client.get_channel(DEFAULT_CHANNEL_ID)
-            
+
             if last_checked != now.day:
                 for server in client.guilds:
                     await send_message(responses.wish_birthday(server.name), channel)
@@ -58,7 +58,7 @@ def run_discord_bot():
     async def on_message(message):
         if message.author == client.user:
             return
-        
+
         watch_message(message)
 
         if message.content[0] == "!":
