@@ -171,7 +171,7 @@ def handle_response(message):
             **!checkbirthday** : This is a debugging tool to see if anyone's birthday is today. You're welcome to call it, I guess.
             **!nextbirthday** : Should display the next birthday this year. If there are none, currently just says so instead of checking the next year. It's on the feature list, believe me.
             **!listbirthdays** : Lists the currently saved birthdays for a server. Should be server specific.
-            **!addbirthday** : Adds a birthday to the saved list of birthdays. An example of the formatting would be '!addbirthday,Adolf,1889,4,20,He'
+            **!addbirthday** : Adds a birthday to the saved list of birthdays. An example of the formatting would be '!addbirthday,Richard,1998,8,6,He'
             **!joke** : Tells a joke. I stole these from the /r/3amjokes and /r/dadjokes subreddits, so they're mostly quick and clean. If you want me to add one, I'd be more than happy to."""
         return help_message
 
