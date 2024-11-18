@@ -1,4 +1,4 @@
-import bot
-
+from cremebot.bot import Bot
 if __name__ == "__main__":
-    bot.run_discord_bot()
+    bot = Bot()
+    bot.run()
